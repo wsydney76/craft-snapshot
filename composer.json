@@ -1,0 +1,40 @@
+{
+  "name": "wsydney76/snapshot",
+  "description": "Creates and restores a snapshot of the applications data",
+  "type": "craft-plugin",
+  "version": "1.0.0",
+  "keywords": [
+    "craft",
+    "cms",
+    "craftcms",
+    "craft-plugin",
+    "snapshot"
+  ],
+  "support": {
+    "docs": "https://github.com/wsydney76/snapshot/blob/master/README.md",
+    "issues": "https://github.com/wsydney76/snapshot/issues"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "wsydney76",
+      "homepage": "https://github.com/wsydney76"
+    }
+  ],
+  "require": {
+    "craftcms/cms": "^3.0.0-RC1"
+  },
+  "autoload": {
+    "psr-4": {
+      "wsydney76\\snapshot\\": "src/"
+    }
+  },
+  "extra": {
+    "name": "snapshot",
+    "handle": "snapshot",
+    "hasCpSettings": false,
+    "hasCpSection": false,
+    "changelogUrl": "https://raw.githubusercontent.com/wsydney76/snapshot/master/CHANGELOG.md",
+    "class": "wsydney76\\snapshot\\Snapshot"
+  }
+}
