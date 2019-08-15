@@ -2,7 +2,7 @@
   "name": "wsydney76/snapshot",
   "description": "Creates and restores a snapshot of the applications data",
   "type": "craft-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": [
     "craft",
     "cms",
