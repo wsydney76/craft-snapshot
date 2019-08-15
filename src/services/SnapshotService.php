@@ -48,14 +48,16 @@ class SnapshotService extends Component
                     $source = $volume->getRootPath();
                     $dest = $snapshotDir . DIRECTORY_SEPARATOR . strtolower($volume->handle);
 
-                    if (!is_dir($dest)) {
-                        FileHelper::createDirectory($dest);
-                    } else {
-                        FileHelper::clearDirectory($dest);
-                    }
+                    if (is_dir($source)) {
+                        if (!is_dir($dest)) {
+                            FileHelper::createDirectory($dest);
+                        } else {
+                            FileHelper::clearDirectory($dest);
+                        }
 
-                    $this->stdout("Copying {$source} to {$dest} ...");
-                    FileHelper::copyDirectory($source, $dest);
+                        $this->stdout("Copying {$source} to {$dest} ...");
+                        FileHelper::copyDirectory($source, $dest);
+                    }
                 }
             }
         } catch (ShellCommandException $e) {
@@ -92,22 +94,20 @@ class SnapshotService extends Component
                     $source = $snapshotDir . DIRECTORY_SEPARATOR . strtolower($volume->handle);
                     $dest = $volume->getRootPath();
 
-                    if (!is_dir($dest)) {
-                        FileHelper::createDirectory($dest);
-                    }
+                    if (is_dir($source)) {
+                        if (!is_dir($dest)) {
+                            FileHelper::createDirectory($dest);
+                        }
 
-                    $this->stdout("Copying {$source} to {$dest} ...");
-                    FileHelper::copyDirectory($source, $dest);
+                        $this->stdout("Copying {$source} to {$dest} ...");
+                        FileHelper::copyDirectory($source, $dest);
+                    }
                 }
             }
 
             if (Craft::$app->config->general->useProjectConfigFile) {
                 $projectConfig = Craft::$app->getProjectConfig();
                 $this->stdout('Rebuilding the project config from the current state ... ');
-
-                Craft::$app->db->createCommand()
-                    ->update('{{%info}}', ['configMap' => ''])
-                    ->execute();
 
                 $projectConfig->rebuild();
             }
