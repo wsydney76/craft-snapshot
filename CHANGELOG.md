@@ -1,5 +1,9 @@
 # Release Notes for Snapshot
 
+## 1.1 2019-09-18
+
+composer.json and composer.lock are now included in the snapshot
+
 ## 1.0.1
 
 ## Added

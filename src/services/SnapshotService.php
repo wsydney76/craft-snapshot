@@ -8,6 +8,7 @@ use craft\errors\ShellCommandException;
 use craft\helpers\Console;
 use craft\helpers\FileHelper;
 use craft\volumes\Local;
+use function file_exists;
 use const DIRECTORY_SEPARATOR;
 use function get_class;
 use function is_dir;
@@ -60,6 +61,17 @@ class SnapshotService extends Component
                     }
                 }
             }
+
+            $composer_file = Craft::parseEnv('@root') . DIRECTORY_SEPARATOR . 'composer.json';
+            if (file_exists($composer_file)) {
+                copy ($composer_file, $snapshotDir . DIRECTORY_SEPARATOR . 'composer.json');
+            }
+
+            $composer_file = Craft::parseEnv('@root') . DIRECTORY_SEPARATOR . 'composer.lock';
+            if (file_exists($composer_file)) {
+                copy ($composer_file, $snapshotDir . DIRECTORY_SEPARATOR . 'composer.lock');
+            }
+
         } catch (ShellCommandException $e) {
             $this->stdout('Error ' . $e->getMessage());
             Craft::error($e->getMessage(), 'snapshot');
@@ -111,6 +123,9 @@ class SnapshotService extends Component
 
                 $projectConfig->rebuild();
             }
+
+            $this->stdout('Please manually copy composer.json and composer.lock from '. $snapshotDir . ' if needed.');
+
         } catch (ShellCommandException $e) {
             $this->stdout('Error ' . $e->getMessage());
             Craft::error($e->getMessage(), 'snapshot');
