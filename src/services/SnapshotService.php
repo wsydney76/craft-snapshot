@@ -8,6 +8,9 @@ use craft\errors\ShellCommandException;
 use craft\helpers\Console;
 use craft\helpers\FileHelper;
 use craft\volumes\Local;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use yii\base\ErrorException;
 use function file_exists;
 use const DIRECTORY_SEPARATOR;
 use function get_class;
@@ -27,7 +30,7 @@ class SnapshotService extends Component
 
         try {
             if (!$snapshotDir) {
-                $snapshotDir = Craft::parseEnv('@root') . DIRECTORY_SEPARATOR . '_snapshot_' . date('Ymd-his');
+                $snapshotDir = Craft::parseEnv('@root') . DIRECTORY_SEPARATOR . 'snapshot_' . date('Ymd-his');
                 $this->stdout('Using directory ' . $snapshotDir);
             }
 
@@ -62,16 +65,30 @@ class SnapshotService extends Component
                 }
             }
 
+            $this->stdout("Start deleting image transforms");
+            $dirs = $this->_getTransFormDirs($snapshotDir);
+
+            foreach ($dirs as $dir) {
+                if (is_dir($dir)) {
+                    try {
+                        FileHelper::clearDirectory($dir);
+                        rmdir($dir);
+                    } catch (ErrorException $e) {
+                        $this->stdout("Error deleting " . $dir . ": " . $e->getMessage());
+                    }
+                }
+            }
+            $this->stdout("Deleted image transforms");
+
             $composer_file = Craft::parseEnv('@root') . DIRECTORY_SEPARATOR . 'composer.json';
             if (file_exists($composer_file)) {
-                copy ($composer_file, $snapshotDir . DIRECTORY_SEPARATOR . 'composer.json');
+                copy($composer_file, $snapshotDir . DIRECTORY_SEPARATOR . 'composer.json');
             }
 
             $composer_file = Craft::parseEnv('@root') . DIRECTORY_SEPARATOR . 'composer.lock';
             if (file_exists($composer_file)) {
-                copy ($composer_file, $snapshotDir . DIRECTORY_SEPARATOR . 'composer.lock');
+                copy($composer_file, $snapshotDir . DIRECTORY_SEPARATOR . 'composer.lock');
             }
-
         } catch (ShellCommandException $e) {
             $this->stdout('Error ' . $e->getMessage());
             Craft::error($e->getMessage(), 'snapshot');
@@ -124,8 +141,7 @@ class SnapshotService extends Component
                 $projectConfig->rebuild();
             }
 
-            $this->stdout('Please manually copy composer.json and composer.lock from '. $snapshotDir . ' if needed.');
-
+            $this->stdout('Please manually copy composer.json and composer.lock from ' . $snapshotDir . ' if needed.');
         } catch (ShellCommandException $e) {
             $this->stdout('Error ' . $e->getMessage());
             Craft::error($e->getMessage(), 'snapshot');
@@ -138,6 +154,9 @@ class SnapshotService extends Component
         return true;
     }
 
+    /**
+     * @param $text
+     */
     private function stdout($text)
     {
         if (Craft::$app->getRequest()->getIsConsoleRequest()) {
@@ -145,5 +164,26 @@ class SnapshotService extends Component
         } else {
             Craft::info($text, 'snapshot');
         }
+    }
+
+    /**
+     * @param $path
+     * @return array
+     */
+    private function _getTransFormDirs($path): array
+    {
+        $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
+
+        $dirs = [];
+        foreach ($rii as $dir) {
+            if ($dir->isDir()) {
+                if (strpos($dir->getPathname(), DIRECTORY_SEPARATOR . '_') &&
+                    !strpos($dir->getPathname(), '..')) {
+                    $dirs[] = $dir->getPathname();
+                }
+            }
+        }
+
+        return $dirs;
     }
 }
