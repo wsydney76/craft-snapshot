@@ -1,5 +1,9 @@
 # Release Notes for Snapshot
 
+## 1.2.1 2019-10-06
+
+Added missing icon
+
 ## 1.2 2019-10-02
 
 Delete image transform directories from snapshot
