@@ -61,6 +61,11 @@ class SnapshotService extends Component
 
                         $this->stdout("Copying {$source} to {$dest} ...");
                         FileHelper::copyDirectory($source, $dest);
+                        $gitignoreFile = $dest . DIRECTORY_SEPARATOR . '.gitignore';
+                        if (file_exists($gitignoreFile)) {
+                            unlink($gitignoreFile);
+                            $this->stdout('Deleted .gitignore');
+                        }
                     }
                 }
             }
