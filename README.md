@@ -9,6 +9,9 @@ Snapshot contains
 Tip: Name your directory according to the corresponding
 release tag in git.
 
+A .ignore file in asset directories is deleted from copied directories. 
+Include the live directory in global .ignore file instead.
+
 ## CLI commands
 
 * craft snapshot/snapshot/create [directory]
