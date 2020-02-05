@@ -1,5 +1,11 @@
 # Release Notes for Snapshot
 
+## 1.3.1 2020-02-05
+
+Delete .ignorefile in copied asset directories
+
+Include the live directory in global .ignore file instead.
+
 ## 1.2.1 2019-10-06
 
 Added missing icon
