@@ -70,6 +70,17 @@ class SnapshotService extends Component
                 }
             }
 
+            // Copy project config
+            $source = Craft::parseEnv('@root/config/project');
+            $dest = $snapshotDir . DIRECTORY_SEPARATOR . 'project';
+            if (!is_dir($dest)) {
+                FileHelper::createDirectory($dest);
+            } else {
+                FileHelper::clearDirectory($dest);
+            }
+            $this->stdout("Copying project config ...");
+            FileHelper::copyDirectory($source, $dest);
+
             $this->stdout("Start deleting image transforms");
             $dirs = $this->_getTransFormDirs($snapshotDir);
 
